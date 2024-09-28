@@ -2,7 +2,7 @@
 
 #define assert(x) if (!(x)) { std::cerr << __LINE__ << ": Assertion " << #x << " failed." << std::endl; exit(-1); }
 
-template<int n> std::array<uint16_t, n> LargeInt<n>::get_val() { return val; }
+template<int n> std::array<uint16_t, n> LargeInt<n>::get_val() const { return val; }
 
 // constructor
 
@@ -88,7 +88,7 @@ template<int n> LargeInt<n> LargeInt<n>::operator>>(const int bit) const
     uint16_t trans = 0;
     for (int i = n - whl - 1; i >= 0; i--) {
         uint16_t new_trans = (res.val[i] & ((1 << sml) - 1)) << (16 - sml);
-        res.val[i] = (res.val[i] << sml) | trans;
+        res.val[i] = (res.val[i] >> sml) | trans;
         trans = new_trans;
     }
     return res;

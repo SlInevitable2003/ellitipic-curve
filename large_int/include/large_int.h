@@ -11,7 +11,7 @@ class LargeInt {
 
     std::pair<LargeInt<n>, LargeInt<n>> division(const LargeInt<n>& other) const;
 public:
-    std::array<uint16_t, n> get_val();
+    std::array<uint16_t, n> get_val() const;
 
     LargeInt();
     LargeInt(uint64_t value);
@@ -50,5 +50,5 @@ public:
     void print();
 };
 
-#define uint256_t LargeInt<8>
-#define uint512_t LargeInt<16>
+#define uint256_t LargeInt<16>
+#define uint512_t LargeInt<32>
