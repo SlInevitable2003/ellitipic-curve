@@ -47,7 +47,7 @@ public:
     bool operator==(const LargeInt<n>& other) const;
     bool operator!=(const LargeInt<n>& other) const;
 
-    void print();
+    void print() const;
 };
 
 #define uint256_t LargeInt<16>

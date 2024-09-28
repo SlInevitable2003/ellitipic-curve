@@ -181,7 +181,7 @@ template<int n> LargeInt<n> LargeInt<n>::operator%(const LargeInt<n>& other) con
 }
 template<int n> LargeInt<n> LargeInt<n>::operator%=(const LargeInt<n>& other) { return (*this) = (*this) % other; }
 
-template<int n> void LargeInt<n>::print()
+template<int n> void LargeInt<n>::print() const
 {
     for (int i = n - 1; i >= 0; i--) std::cout << std::setw(4) << std::setfill('0') << std::hex << val[i];
     std::cout << std::endl;

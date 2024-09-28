@@ -3,24 +3,31 @@
 uint512_t inject(const uint256_t&);
 uint256_t trunct(const uint512_t&);
 
+extern const uint256_t Prime[3];
+
+template <int p>
 class FpField {
-    uint256_t pri, val;
+    uint256_t val;
 public:
-    FpField(const uint256_t& prime);
-    FpField(const uint256_t& prime, const uint256_t& val);
+    FpField();
+    FpField(const uint256_t& val);
 
-    FpField add_inverse() const;
-    FpField mul_inverse() const;
+    FpField<p> add_inverse() const;
+    FpField<p> mul_inverse() const;
 
-    FpField operator+(const FpField& other) const;
-    FpField operator-(const FpField& other) const;
-    FpField operator*(const FpField& other) const;
-    FpField operator/(const FpField& other) const;
+    FpField<p> operator+(const FpField<p>& other) const;
+    FpField<p> operator-(const FpField<p>& other) const;
+    FpField<p> operator*(const FpField<p>& other) const;
+    FpField<p> operator/(const FpField<p>& other) const;
 
-    FpField operator+=(const FpField& other);
-    FpField operator-=(const FpField& other);
-    FpField operator*=(const FpField& other);
-    FpField operator/=(const FpField& other);
+    FpField<p> operator+=(const FpField<p>& other);
+    FpField<p> operator-=(const FpField<p>& other);
+    FpField<p> operator*=(const FpField<p>& other);
+    FpField<p> operator/=(const FpField<p>& other);
 
-    void print();
+    void print() const;
 };
+
+#define fp_secp256r1 FpField<0>
+#define fp_ed25519 FpField<1>
+#define fp_secp256k1 FpField<2>

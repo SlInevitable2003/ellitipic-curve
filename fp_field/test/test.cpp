@@ -5,8 +5,11 @@ using namespace std;
 extern template class uint256_t;
 extern template class uint512_t;
 
-uint256_t zero{0}, one{1};
-uint256_t pri = (zero - one) - (one << 224) + (one << 192) + (one << 96);
+extern template class fp_secp256r1;
+extern template class fp_ed25519;
+extern template class fp_secp256k1;
+
+extern const uint256_t Prime[3];
 
 uint16_t urand16() { return rand() & ((1 << 16) - 1); }
 uint256_t urand256() 
@@ -27,15 +30,16 @@ chrono::high_resolution_clock::time_point st, ed;
 int main(int argc, char *argv[])
 {
     srand(time(0));
-    pri.print();
-    FpField a{pri, urand256()}, b{pri, urand256()};
+    Prime[2].print();
+    
+    fp_secp256k1 a{urand256()}, b{urand256()};
     a.print(); b.print();
     
-    prof((a + b));
-    prof((a - b));
-    prof((a * b));
-    prof((a / a));
-    prof((a / b));
+    prof((a + b).print());
+    prof((a - b).print());
+    prof((a * b).print());
+    prof((a / a).print());
+    prof((a / b).print());
 
     return 0;
 }

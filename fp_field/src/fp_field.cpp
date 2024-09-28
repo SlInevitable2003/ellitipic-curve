@@ -2,6 +2,13 @@
 
 #define assert(x) if (!(x)) { std::cerr << __LINE__ << ": Assertion " << #x << " failed." << std::endl; exit(-1); }
 
+std::vector<uint16_t> arr0 = { 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0, 0, 0, 0, 0, 0, 1, 0, 0xffff, 0xffff };
+std::vector<uint16_t> arr1 = { 0xffed, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 
+                               0xffff, 0xffff, 0xffff, 0x7fff };
+std::vector<uint16_t> arr2 = { 0xfc2f, 0xffff, 0xfffe, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+                               0xffff, 0xffff, 0xffff, 0xffff };
+const uint256_t Prime[3] = {arr0, arr1, arr2};                               
+
 uint512_t inject(const uint256_t& sml)
 {
     std::vector<uint16_t> buf;
@@ -17,43 +24,45 @@ uint256_t trunct(const uint512_t& lar)
     return buf;
 }
 
-FpField::FpField(const uint256_t& prime) : pri{prime}, val{0} {}
-FpField::FpField(const uint256_t& prime, const uint256_t& value) : pri{prime}, val{value % pri} {}
+template<int p> FpField<p>::FpField() : val{0} {}
+template<int p> FpField<p>::FpField(const uint256_t& value) : val{value % Prime[p]} {}
 
-FpField FpField::operator+(const FpField& other) const
+template<int p> FpField<p> FpField<p>::operator+(const FpField<p>& other) const
 {
-    assert(pri == other.pri);
-    uint512_t remainder = (inject(val) + inject(other.val)) % inject(pri);
-    return {pri, trunct(remainder)};
+    uint512_t remainder = (inject(val) + inject(other.val)) % inject(Prime[p]);
+    return trunct(remainder);
 }
-FpField FpField::operator+=(const FpField& other) { return (*this) = (*this) + other; }
+template<int p> FpField<p> FpField<p>::operator+=(const FpField<p>& other) { return (*this) = (*this) + other; }
 
-FpField FpField::add_inverse() const { return {pri, pri - val}; }
-FpField FpField::operator-(const FpField& other) const { return (*this) + other.add_inverse(); }
-FpField FpField::operator-=(const FpField& other) { return (*this) = (*this) - other; }
+template<int p> FpField<p> FpField<p>::add_inverse() const { return {Prime[p] - val}; }
+template<int p> FpField<p> FpField<p>::operator-(const FpField<p>& other) const { return (*this) + other.add_inverse(); }
+template<int p> FpField<p> FpField<p>::operator-=(const FpField<p>& other) { return (*this) = (*this) - other; }
 
-FpField FpField::operator*(const FpField& other) const
+template<int p> FpField<p> FpField<p>::operator*(const FpField<p>& other) const
 {
-    assert(pri == other.pri);
-    uint512_t remainder = (inject(val) * inject(other.val)) % inject(pri);
-    return {pri, trunct(remainder)};
+    uint512_t remainder = (inject(val) * inject(other.val)) % inject(Prime[p]);
+    return trunct(remainder);
 }
-FpField FpField::operator*=(const FpField& other) { return (*this) = (*this) * other; }
+template<int p> FpField<p> FpField<p>::operator*=(const FpField<p>& other) { return (*this) = (*this) * other; }
 
-FpField FpField::mul_inverse() const 
+template<int p> FpField<p> FpField<p>::mul_inverse() const 
 {
     assert(val != 0);
     // For a in (Z_p)^*, a^(p-1) = 1 ==> a.mul_inverse() = a^(p-2)
-    uint256_t power{pri - 2};
-    uint512_t unit{inject(val)}, res{1}, mod{inject(pri)};
+    uint256_t power{Prime[p] - 2};
+    uint512_t unit{inject(val)}, res{1}, mod{inject(Prime[p])};
     while (power > 0) {
         if ((power & 1) > 0) res = (res * unit) % mod;
         unit = (unit * unit) % mod;
         power >>= 1;
     }
-    return {pri, trunct(res)};
+    return trunct(res);
 }
-FpField FpField::operator/(const FpField& other) const { return (*this) * other.mul_inverse(); }
-FpField FpField::operator/=(const FpField& other) { return (*this) = (*this) / other; }
+template<int p> FpField<p> FpField<p>::operator/(const FpField<p>& other) const { return (*this) * other.mul_inverse(); }
+template<int p> FpField<p> FpField<p>::operator/=(const FpField<p>& other) { return (*this) = (*this) / other; }
 
-void FpField::print() { val.print(); }
+template<int p> void FpField<p>::print() const { val.print(); }
+
+template class fp_secp256r1;
+template class fp_ed25519;
+template class fp_secp256k1;
