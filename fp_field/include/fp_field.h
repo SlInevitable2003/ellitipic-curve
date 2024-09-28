@@ -12,6 +12,8 @@ public:
     FpField();
     FpField(const uint256_t& val);
 
+    uint256_t get_val() const;
+
     FpField<p> add_inverse() const;
     FpField<p> mul_inverse() const;
 
@@ -24,6 +26,9 @@ public:
     FpField<p> operator-=(const FpField<p>& other);
     FpField<p> operator*=(const FpField<p>& other);
     FpField<p> operator/=(const FpField<p>& other);
+
+    bool operator==(const FpField<p>& other) const;
+    bool operator!=(const FpField<p>& other) const;
 
     void print() const;
 };

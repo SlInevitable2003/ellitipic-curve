@@ -9,6 +9,10 @@ std::vector<uint16_t> arr2 = { 0xfc2f, 0xffff, 0xfffe, 0xffff, 0xffff, 0xffff, 0
                                0xffff, 0xffff, 0xffff, 0xffff };
 const uint256_t Prime[3] = {arr0, arr1, arr2};                               
 
+// helper function
+
+template<int p> uint256_t FpField<p>::get_val() const { return val; }
+
 uint512_t inject(const uint256_t& sml)
 {
     std::vector<uint16_t> buf;
@@ -24,8 +28,17 @@ uint256_t trunct(const uint512_t& lar)
     return buf;
 }
 
+// comparator
+
+template<int p> bool FpField<p>::operator==(const FpField<p>& other) const { return val == other.val; }
+template<int p> bool FpField<p>::operator!=(const FpField<p>& other) const { return val != other.val; }
+
+// constructor
+
 template<int p> FpField<p>::FpField() : val{0} {}
 template<int p> FpField<p>::FpField(const uint256_t& value) : val{value % Prime[p]} {}
+
+// arithmetic calculator
 
 template<int p> FpField<p> FpField<p>::operator+(const FpField<p>& other) const
 {
